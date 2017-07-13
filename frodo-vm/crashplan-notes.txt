@@ -1,0 +1,8 @@
+
+dnf install xauth
+dnf install gtk2
+
+firewall-cmd --zone=FedoraServer --add-port=4242/tcp
+firewall-cmd --zone=FedoraServer --add-port=4242/tcp --permanent
+
+firewall-cmd --list-ports
