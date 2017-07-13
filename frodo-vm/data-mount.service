@@ -1,0 +1,13 @@
+#
+# INSTALL: /etc/systemd/system/data-mount.service
+#
+[Unit]
+Description=Check /data/Multimedia has mounted
+After=autofs.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/lib/check-multimedia.sh
+
+[Install]
+WantedBy=multi-user.target

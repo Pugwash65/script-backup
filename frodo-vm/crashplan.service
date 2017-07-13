@@ -1,0 +1,17 @@
+#
+# INSTALL: /etc/systemd/system/crashplan.service
+#
+[Unit]
+Description=My Crashplan Service Engine
+After=autofs.service
+Requires=data-mount.service
+
+[Service]
+Type=oneshot
+ExecStart=/export/crashplan/bin/CrashPlanEngine start
+ExecStop=/export/crashplan/bin/CrashPlanEngine stop
+ExecReload=/export/crashplan/bin/CrashPlanEngine restart
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
