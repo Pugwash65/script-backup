@@ -1,0 +1,5 @@
+# Update the firewall rules
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=S.M.Pillinger@cs.bham.ac.uk
+10 3 * * * root /usr/local/sbin/update-firewall.sh
