@@ -1,0 +1,30 @@
+
+dnf install postfix
+
+Edit /etc/postfix/main.cf 
+
+myhostname = frodo-vm.dancing-monkey.no-ip.org
+relayhost = [smtp.gmail.com]:587
+smtp_use_tls = yes
+smtp_sasl_auth_enable = yes
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_tls_CAfile = /etc/ssl/certs/ca-bundle.crt
+smtp_sasl_security_options =
+#smtp_sasl_security_options = noanonymous
+#smtp_sasl_tls_security_options = noanonymous
+
+Edit /etc/postfix/sasl_passwd
+
+[smtp.gmail.com]:587 Steve.Pillinger@gmail.com:<app-specific-password>
+
+chown root:postfix /etc/postfix/sasl_passwd
+chmod 640 /etc/postfix/sasl_passwd
+
+Build DB
+
+postmap /etc/postfix/sasl_passwd
+
+systemctl enable postfix
+systemctl start postfix
+
