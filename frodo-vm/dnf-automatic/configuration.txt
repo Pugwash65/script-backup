@@ -1,0 +1,15 @@
+
+dnf install dnf-automatic
+
+Edit /etc/dnf/automatic.conf
+
+apply_updates = yes
+
+emit_via = email
+email_from = root@frodo-vm.dancing-monkey.no-ip.org
+email_to = Steve.Pillinger@gmail.com
+email_host = localhost
+
+systemctl enable dnf-automatic-install.timer
+systemctl start dnf-automatic-install.timer
+
