@@ -1,0 +1,20 @@
+
+Download & Install Entware-NG opkg
+
+/opt/bin/opkg update
+/opt/bin/opkg install tar
+/opt/bin/opkg install ar
+
+Use a temporary location to extract packages, the move /opt/bin & /opt/lib
+etc.
+
+Download Debian Jessie Handbrake-cli & dependency packages (see below)
+
+	ar xv <deb-package>
+	tar xvf data.tar.xv
+
+will extract package contents.
+
+Either copy entire package or select the dependency and copy to lib directory.
+
+See required-pkgs.txt & required-libs.txt
