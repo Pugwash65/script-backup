@@ -8,7 +8,7 @@ usage() {
 }
 
 BASE=/share/homes/Steve
-SPOOL=${BASE}/spool
+QUEUE=${BASE}/spool/queue
 
 SOURCE_DIR=${1}
 
@@ -46,7 +46,7 @@ if [ "x${ext}" != "xmp4" ]; then
    exit 1
 fi
 
-if [ -e ${OUTPUT_FILE} ]; then
+if [ -e "${OUTPUT_FILE}" ]; then
    echo "Output file already exists"
    exit 1
 fi
@@ -57,7 +57,7 @@ if [ ! -f "${SOURCE_DIR}/VIDEO_TS.IFO" ]; then
 fi
 
 time=`date +%s`
-spool_file="${SPOOL}/${time}.cnv"
+spool_file="${QUEUE}/${time}.cnv"
 
 echo ${SOURCE_DIR},${OUTPUT_FILE},${TITLE},${SUBTITLE},${CHAPTERS} > ${spool_file}
 
