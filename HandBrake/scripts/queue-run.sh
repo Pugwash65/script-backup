@@ -5,11 +5,23 @@ export LD_LIBRARY_PATH=${BASE}/handbrake/usr/lib
 
 HANDBRAKE=${BASE}/handbrake/usr/bin/HandBrakeCLI
 
+QUEUE_LOG=${BASE}/process.log
+HBCLI_LOG=${BASE}/hb-cli.log
 SPOOL_DIR=${BASE}/spool
-DONE_DIR=${BASE}/completed
+QUEUE_DIR=${SPOOL_DIR}/queue
+DONE_DIR=${SPOOL_DIR}/completed
+LOCKFILE=${SPOOL_DIR}/run.lock
+
+trap catch_int int
+
+function catch_int() {
+  echo Quit...
+  rm ${LOCKFILE}
+  exit 1
+}
 
 function run_queue() {
-  for f in ${SPOOL_DIR}/*; do
+  for f in ${QUEUE_DIR}/*; do
 
      run_convert $f
   done
@@ -20,8 +32,9 @@ function run_convert() {
   file=$1
 
   while IFS=, read -r src dst title subtitle chapters; do
-	echo $src
-	echo $dst
+        outf=`basename "${dst}"`
+	echo "${src} => ${outf}"
+
 	if [ "x${chapters}" != "x" ]; then
            chapters="-c ${chapters}"
         fi
@@ -30,20 +43,33 @@ function run_convert() {
            subtitle="-s ${subtitle}"
         fi
 
-        echo ${HANDBRAKE} -i ${src} -Z "High Profile" -t ${title} -o ${dst} ${subtitle} ${chapters}
+	touch "${dst}"
+	chmod 644 "${dst}"
+        ${HANDBRAKE} -i "${src}" -Z "High Profile" -t ${title} -o "${dst}" ${subtitle} ${chapters} > ${HBCLI_LOG} 2>&1
 
+	if [ $? = 0 ]; then
+ 	  /bin/mv ${file} ${DONE_DIR}
+	  echo "completed: ${dst}" >> ${QUEUE_LOG}
+	else
+	  echo "   failed: ${dst}" >> ${QUEUE_LOG}
+	  exit 1
+	fi
+        
   done <"$file"
 
- /bin/mv ${file} ${DONE_DIR}
 }
 
+if [ -f ${LOCKFILE} ]; then
+   echo "Lockfile exists"
+   exit 1
+fi
 
-while true; do
-  if [ `/bin/ls -A ${SPOOL_DIR}` ]; then
-     run_queue
-  else
-#     sleep 300
-     sleep 2
-  fi
-done
+echo $$ > ${LOCKFILE}
 
+if [ "$(/bin/ls -A ${QUEUE_DIR})" ]; then
+   run_queue
+fi
+
+rm ${LOCKFILE}
+
+exit 0
