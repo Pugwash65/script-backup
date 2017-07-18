@@ -45,7 +45,7 @@ function run_convert() {
 
 	touch "${dst}"
 	chmod 644 "${dst}"
-        ${HANDBRAKE} -i "${src}" -Z "High Profile" -t ${title} -o "${dst}" ${subtitle} ${chapters} > ${HBCLI_LOG} 2>&1
+        ${HANDBRAKE} -i "${src}" -Z "High Profile" -m -t ${title} -o "${dst}" ${subtitle} ${chapters} > ${HBCLI_LOG} 2>&1
 
 	if [ $? = 0 ]; then
  	  /bin/mv ${file} ${DONE_DIR}
