@@ -8,6 +8,9 @@ usage() {
 }
 
 BASE=/share/homes/Steve
+
+RUN_QUEUE=${BASE}/bin/queue-run.sh
+
 QUEUE=${BASE}/spool/queue
 
 SOURCE_DIR=${1}
@@ -59,9 +62,16 @@ fi
 time=`date +%s`
 spool_file="${QUEUE}/${time}.cnv"
 
-echo ${SOURCE_DIR},${OUTPUT_FILE},${TITLE},${SUBTITLE},${CHAPTERS} > ${spool_file}
+echo ${SOURCE_DIR},${OUTPUT_FILE},${TITLE},${SUBTITLE},${CHAPTERS} >> ${spool_file}
 
 echo "Conversion queued"
+
+c=`/bin/ps -ef | /bin/grep queue-run.sh | /bin/grep -v grep -c`
+
+if [ $c = 0 ]; then
+   echo "Starting queue run..."
+   ${RUN_QUEUE}
+fi
 
 exit 0
 
