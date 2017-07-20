@@ -14,7 +14,7 @@ LOCKFILE=${BASE}/spool/run.lock
 start()
 {
 	/bin/echo -n "Starting Handbrake queue: "
-        ${QUEUE_RUN}
+        sudu -u Steve ${QUEUE_RUN}
 	RETVAL=$?
 	echo " OK"
 }
