@@ -109,6 +109,7 @@ if [ -f ${LOCKFILE} ]; then
 fi
 
 echo $$ > ${LOCKFILE}
+cp /dev/null ${QUEUE_LOG}
 
 success=0
 while [ "$(/bin/ls -A ${QUEUE_DIR})" ]; do
