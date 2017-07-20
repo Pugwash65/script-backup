@@ -63,8 +63,10 @@ EOT
            chapters="-c ${chapters}"
         fi
 
-        if [ "x${subtitle}" != "x" ]; then
+        if [ "x${subtitle}" != "x" -a "x${subtitle}" != "x0" ]; then
            subtitle="-s ${subtitle}"
+	else
+	   subtitle=""
         fi
 
 	/bin/cat >> ${CMDFILE} <<EOT
