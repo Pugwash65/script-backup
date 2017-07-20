@@ -33,7 +33,7 @@ function catch_int() {
 function run_queue() {
   for f in ${QUEUE_DIR}/*; do
 
-     run_convert $f
+    run_convert $f
   done
 
 }
@@ -59,6 +59,7 @@ function run_convert() {
 	chmod 644 "${dst}"
 
 	if [ ${DEBUG} = 1 ]; then
+	   echo ${dst}
 	   sleep 2
 	else
            ${HANDBRAKE} -i "${src}" -Z "High Profile" -m -t ${title} -o "${dst}" ${subtitle} ${chapters} > ${HBCLI_LOG} 2>&1
@@ -86,6 +87,7 @@ fi
 
 echo $$ > ${LOCKFILE}
 
+success=0
 while [ "$(/bin/ls -A ${QUEUE_DIR})" ]; do
    run_queue
    if [ ${success} = 0 ]; then
