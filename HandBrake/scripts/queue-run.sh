@@ -13,6 +13,7 @@ SPOOL_DIR=${BASE}/spool
 QUEUE_DIR=${SPOOL_DIR}/queue
 DONE_DIR=${SPOOL_DIR}/completed
 LOCKFILE=${SPOOL_DIR}/run.lock
+CMDFILE=${SPOOL_DIR}/encode.sh
 
 # Re-run in the background
 
@@ -43,9 +44,20 @@ function run_convert() {
 
   success=1
 
+  # When Handbrake is run it clobbers the read loop - so add the commands to a script instead
+
+  /bin/cat > ${CMDFILE} <<EOT
+#!bin/bash
+
+QUEUE_LOG=${QUEUE_LOG}
+HBCLI_LOG=${HBCLI_LOG}
+DEBUG=${DEBUG}
+
+EOT
+  /bin/chmod 600 ${CMDFILE}
+
   while IFS=, read -r src dst title subtitle chapters; do
         outf=`basename "${dst}"`
-	echo "${src} => ${outf}"
 
 	if [ "x${chapters}" != "x" ]; then
            chapters="-c ${chapters}"
@@ -55,27 +67,38 @@ function run_convert() {
            subtitle="-s ${subtitle}"
         fi
 
-	touch "${dst}"
-	chmod 644 "${dst}"
+	/bin/cat >> ${CMDFILE} <<EOT
 
-	if [ ${DEBUG} = 1 ]; then
-	   echo ${dst}
-	   sleep 2
-	else
-           ${HANDBRAKE} -i "${src}" -Z "High Profile" -m -t ${title} -o "${dst}" ${subtitle} ${chapters} > ${HBCLI_LOG} 2>&1
-	fi
+/bin/touch "${dst}"
+/bin/chmod 644 "${dst}" 
 
-	if [ $? = 0 ]; then
-	  echo "completed: ${dst}" >> ${QUEUE_LOG}
-	else
-	  echo "   failed: ${dst}" >> ${QUEUE_LOG}
-	  success=0
-	fi
-        
+now=\`/bin/date +"%D %T"\`
+
+if [ \${DEBUG} = 0 ]; then
+   ${HANDBRAKE} -i "${src}" -Z "High Profile" -m -t ${title} -o "${dst}" ${subtitle} ${chapters} > ${HBCLI_LOG} 2>&1
+else
+   echo "Encode track ${title} => ${dst}"
+fi
+
+if [ \$? = 0 ]; then
+  echo "\${now} - completed: ${dst}" >> ${QUEUE_LOG}
+else
+  echo "\${now} -    failed: ${dst}" >> ${QUEUE_LOG}
+  exit 1
+fi
+
+EOT
+
   done <"$file"
 
-  if [ ${success} = 1 ]; then
+  echo "exit 0" >> ${CMDFILE}
+
+  sh ${CMDFILE}
+
+  if [ $? = 0 ]; then
     /bin/mv ${file} ${DONE_DIR}
+  else
+     success=0
   fi
         
 }
@@ -96,6 +119,7 @@ while [ "$(/bin/ls -A ${QUEUE_DIR})" ]; do
    fi
 done
 
+rm ${CMDFILE}
 rm ${LOCKFILE}
 
 exit 0
