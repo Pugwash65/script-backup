@@ -82,10 +82,9 @@ EOT
 
 now=\`/bin/date +"%D %T"\`
 
+echo "\${now} - Encode track ${title} => ${outf}" >> ${QUEUE_LOG}
 if [ \${DEBUG} = 0 ]; then
    ${HANDBRAKE} -i "${src}" -Z "High Profile" -m -t ${title} -o "${dst}" ${subtitle} ${chapters} > ${HBCLI_LOG} 2>&1
-else
-   echo "Encode track ${title} => ${dst}"
 fi
 
 if [ \$? = 0 ]; then
