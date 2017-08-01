@@ -31,6 +31,8 @@ function catch_int() {
   exit 1
 }
 
+# Process every file in the queue dir
+
 function run_queue() {
   for f in ${QUEUE_DIR}/*; do
 
@@ -39,12 +41,16 @@ function run_queue() {
 
 }
 
+# Process a job file
+
 function run_convert() {
   file=$1
 
   success=1
 
-  # When Handbrake is run it clobbers the read loop - so add the commands to a script instead
+  # When Handbrake is run it clobbers the read loop
+  # So add the commands to a script instead
+  # But shouldn't matter as only one job per job file now
 
   /bin/cat > ${CMDFILE} <<EOT
 #!bin/bash
@@ -83,9 +89,9 @@ else
 fi
 
 if [ \$? = 0 ]; then
-  echo "\${now} - completed: ${dst}" >> ${QUEUE_LOG}
+  echo "\${now} - completed: ${outf}" >> ${QUEUE_LOG}
 else
-  echo "\${now} -    failed: ${dst}" >> ${QUEUE_LOG}
+  echo "\${now} -    failed: ${outf}" >> ${QUEUE_LOG}
   exit 1
 fi
 
@@ -105,13 +111,30 @@ EOT
         
 }
 
+#
+# Main
+#
+
+# Check for lockfile
+
 if [ -f ${LOCKFILE} ]; then
    echo "Lockfile exists"
    exit 1
 fi
 
+# Create lock file
+
 echo $$ > ${LOCKFILE}
-cp /dev/null ${QUEUE_LOG}
+
+# Zero queue log
+
+#cp /dev/null ${QUEUE_LOG}
+
+now=`/bin/date +"%D %T"`
+echo "${now} - Starting Run" >> ${QUEUE_LOG}
+echo "" >> ${QUEUE_LOG}
+
+# Loop over queue dir in case a job was queued during current run
 
 success=0
 while [ "$(/bin/ls -A ${QUEUE_DIR})" ]; do
@@ -121,6 +144,10 @@ while [ "$(/bin/ls -A ${QUEUE_DIR})" ]; do
       break
    fi
 done
+
+now=`/bin/date +"%D %T"`
+echo "${now} - Ending Run" >> ${QUEUE_LOG}
+echo "" >> ${QUEUE_LOG}
 
 rm ${CMDFILE}
 rm ${LOCKFILE}

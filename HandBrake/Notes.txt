@@ -1,4 +1,12 @@
 
+Debian Jessie only has HandbrakeCLI v0.9.9, which doesn't have the
+--non-anamorphic flag support.
+This technique didn't work for newer versions using Debian Sid pkg's.
+
+So downloaded a Handbrake QPKG, and extracted the components from that instead.
+
+==============================================================================
+
 Download & Install Entware-NG opkg
 
 /opt/bin/opkg update

@@ -60,7 +60,8 @@ if [ ! -f "${SOURCE_DIR}/VIDEO_TS.IFO" ]; then
 fi
 
 time=`date +%s`
-spool_file="${QUEUE}/${time}.cnv"
+pid=$$
+spool_file="${QUEUE}/${time}-${pid}.cnv"
 
 echo ${SOURCE_DIR},${OUTPUT_FILE},${TITLE},${SUBTITLE},${CHAPTERS} >> ${spool_file}
 
