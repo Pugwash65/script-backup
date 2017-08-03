@@ -13,8 +13,8 @@ LOCKFILE=${BASE}/spool/run.lock
 start()
 {
 	/bin/echo -n "Starting Handbrake queue: "
-	/bin/rm ${LOCKFILE}
-        /usr/bin/sudu -u Steve ${QUEUE_RUN}
+	[ -f ${LOCKFILE} ] && /bin/rm ${LOCKFILE}
+        /usr/bin/sudo -u Steve ${QUEUE_RUN}
 	RETVAL=$?
 	echo " OK"
 }
