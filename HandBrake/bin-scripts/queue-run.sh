@@ -87,6 +87,8 @@ if [ \${DEBUG} = 0 ]; then
    ${HANDBRAKE} -i "${src}" -Z "High Profile" -m -t ${title} -o "${dst}" ${subtitle} ${chapters} > ${HBCLI_LOG} 2>&1
 fi
 
+now=\`/bin/date +"%D %T"\`
+
 if [ \$? = 0 ]; then
   echo "\${now} - completed: ${outf}" >> ${QUEUE_LOG}
 else
