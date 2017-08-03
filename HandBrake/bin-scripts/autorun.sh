@@ -6,11 +6,7 @@
 #
 
 BASE=/share/homes/Steve
-QUEUE_RUN=${BASE}/bin/queue-run.sh
-LOCKFILE=${BASE}/spool/run.lock
 
-/bin/echo -n "Starting Handbrake queue: "
-/bin/rm ${LOCKFILE}
-/usr/bin/sudu -u Steve ${QUEUE_RUN}
+/bin/sh ${BASE}/bin/control-queue.sh start
 
 exit $?

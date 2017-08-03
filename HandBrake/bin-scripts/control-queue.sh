@@ -2,7 +2,6 @@
 #
 # description: Starts and stops the snmp agent deamon
 #
-# cp /share/CACHEDEV1_DATA/homes/Steve/bin/S99encode-queue /etc/rcS.d/S99encode-queue
 #
 
 RETVAL=0
@@ -14,7 +13,8 @@ LOCKFILE=${BASE}/spool/run.lock
 start()
 {
 	/bin/echo -n "Starting Handbrake queue: "
-        sudu -u Steve ${QUEUE_RUN}
+	/bin/rm ${LOCKFILE}
+        /usr/bin/sudu -u Steve ${QUEUE_RUN}
 	RETVAL=$?
 	echo " OK"
 }
