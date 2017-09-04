@@ -2,7 +2,10 @@
 
 DATFILE='encode.dat'
 VIDEOTS='VIDEO_TS'
-ADDENCODE=/share/homes/Steve/bin/add-encode.sh
+
+BASE=/share/homes/Steve
+RUN_QUEUE=${BASE}/bin/queue-run.sh
+QUEUE=${BASE}/spool/queue
 
 if [ ! -f ${DATFILE} ]; then
    echo "${DATFILE}: Not present"
@@ -15,6 +18,9 @@ if [ ! -d ${VIDEOTS} ]; then
 fi
 
 dvd_dir=`/bin/pwd`
+
+time=`date +%s`
+count=1
 
 while IFS=, read -r track subtitle output; do
 
@@ -49,6 +55,54 @@ while IFS=, read -r track subtitle output; do
      exit
   fi
 
-  ${ADDENCODE} "${dvd_dir}/${VIDEOTS}" "${dvd_dir}/${outfile}" ${track_num} ${subtitle_num} 
-     
+  # Remove quotes and encode commas
+
+  outfile="${outfile#\"}"
+  outfile="${outfile%\"}"
+##  outfile=`echo ${outfile} | /bin/sed -e 's/,/#@#/g'`
+
+  source="${dvd_dir}/${VIDEOTS}"
+
+  outpath="${dvd_dir}/${outfile}"
+
+  ext="${outfile##*.}"
+
+  if [ "x${ext}" != "xmp4" ]; then
+     echo "Output files should be .mp4"
+     exit 1
+  fi
+
+  if [ -e "${outpath}" ]; then
+     echo "Output file already exists"
+     exit 1
+  fi
+
+  if [ ! -f "${source}/VIDEO_TS.IFO" ]; then
+     echo "Source must be a DVD"
+     exit 1
+  fi
+
+  spool_file="${QUEUE}/${time}-${count}.cnv"
+
+  let "count++"
+
+  cat > $spool_file <<EOT
+track=${track_num}
+subtitle=${subtitle_num}
+output="${outpath}"
+source="${source}"
+EOT
+
 done < "${DATFILE}"
+
+echo "Conversion queued"
+
+c=`/bin/ps -ef | /bin/grep queue-run.sh | /bin/grep -v grep -c`
+
+if [ $c = 0 ]; then
+   echo "Starting queue run..."
+   ${RUN_QUEUE}
+fi
+
+exit 0
+

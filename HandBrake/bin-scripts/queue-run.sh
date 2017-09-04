@@ -58,33 +58,49 @@ function run_convert() {
 QUEUE_LOG=${QUEUE_LOG}
 HBCLI_LOG=${HBCLI_LOG}
 DEBUG=${DEBUG}
-
 EOT
+
   /bin/chmod 600 ${CMDFILE}
 
-  while IFS=, read -r src dst title subtitle chapters; do
-        outf=`basename "${dst}"`
+  subtitle=""
 
-	if [ "x${chapters}" != "x" ]; then
-           chapters="-c ${chapters}"
-        fi
+  while IFS=\= read -r key value ; do
 
-        if [ "x${subtitle}" != "x" -a "x${subtitle}" != "x0" ]; then
-           subtitle="-s ${subtitle}"
-	else
-	   subtitle=""
-        fi
+     if [ "x${key}" = "xtrack" ]; then
+        track=${value}
+     fi
 
-	/bin/cat >> ${CMDFILE} <<EOT
+     if [ "x${key}" = "xchapters" ]; then
+        chapters="-c ${value}"
+     fi
 
-/bin/touch "${dst}"
-/bin/chmod 644 "${dst}" 
+     if [ "x${key}" = "xsubtitle" -a "x${value}" != "x0" ]; then
+        subtitle="-s ${value}"
+     fi
+
+     if [ "x${key}" = "xoutput" ]; then
+        output="${value}"
+     fi
+
+     if [ "x${key}" = "xsource" ]; then
+        source="${value}"
+     fi
+  done <"$file"
+
+  outf=`basename "${output}"`
+  outf="${outf%\"}"
+
+  /bin/cat >> ${CMDFILE} <<EOT
+
+/bin/touch ${output}
+/bin/chmod 644 ${output}
 
 now=\`/bin/date +"%D %T"\`
 
-echo "\${now} - Encode track ${title} => ${outf}" >> ${QUEUE_LOG}
+echo "\${now} - Encode track ${track} => ${outf}" >> ${QUEUE_LOG}
+
 if [ \${DEBUG} = 0 ]; then
-   ${HANDBRAKE} -i "${src}" -Z "High Profile" -m -t ${title} -o "${dst}" ${subtitle} ${chapters} > ${HBCLI_LOG} 2>&1
+  ${HANDBRAKE} -i ${source} -Z "High Profile" -m -t ${track} -o ${output} ${subtitle} ${chapters} > ${HBCLI_LOG} 2>&1
 fi
 
 now=\`/bin/date +"%D %T"\`
@@ -98,14 +114,12 @@ fi
 
 EOT
 
-  done <"$file"
-
   echo "exit 0" >> ${CMDFILE}
 
   sh ${CMDFILE}
 
   if [ $? = 0 ]; then
-    /bin/mv ${file} ${DONE_DIR}
+     /bin/mv ${file} ${DONE_DIR}
   else
      success=0
   fi
