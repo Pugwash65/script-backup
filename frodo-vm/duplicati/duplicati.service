@@ -1,0 +1,17 @@
+#
+# INSTALL: /etc/systemd/system/duplicati.service
+#
+[Unit]
+Description=Duplicati Server
+After=autofs.service
+Requires=data-mount.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/lib/duplicati-init.sh start
+ExecStop=/usr/local/lib/duplicati-init.sh stop
+ExecReload=/usr/local/lib/duplicati-init.sh reload
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

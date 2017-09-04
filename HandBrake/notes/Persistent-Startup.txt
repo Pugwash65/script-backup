@@ -1,0 +1,30 @@
+
+QNAP NAS will lose any modifications to /etc/init.d when it reboots and copies
+is root from NVRAM. So use the MTD method to hook a script in to avoid wearing
+out the NVRAM with continual modifications.
+
+* Determine disk partition:
+
+  p=`/sbin/hal_app --get_boot_pd port_id=0`
+
+* Mount the partition
+
+  mount -t ext2 ${p}6 /tmp/config
+
+* Create /tmp/config/autorun.sh
+
+#!/bin/sh
+
+if [ -f /etc/config/autorun.sh ]; then
+   . /etc/config/autorun.sh
+fi
+
+exit 0
+
+* Make executable 
+
+chmod 755 /tmp/config/autorun.sh
+
+* Unmount
+
+  umount /tmp/config
