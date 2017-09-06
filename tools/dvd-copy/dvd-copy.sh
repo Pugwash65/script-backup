@@ -27,9 +27,8 @@ if [ "x${dvdcheck}" = "x0" ]; then
    exit 1
 fi
 
-dvddir=`/bin/df ${dvddev} | /bin/tail -n 1 | /bin/awk '{print $NF}'`
-dvdname=`/bin/basename ${dvddir}`
-
+dvddir=`/bin/df ${dvddev} | /bin/tail -n 1 | /bin/sed -e 's/^\([^ ]* *\)\{5\}//'`
+dvdname=`/bin/basename "${dvddir}"`
 
 echo ""
 echo "Ready to copy ${dvdname} to ${dstdir}?"
