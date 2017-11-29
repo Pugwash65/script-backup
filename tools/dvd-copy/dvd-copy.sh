@@ -19,9 +19,16 @@ if [ ! -d "${dstdir}" ]; then
    exit 1
 fi
 
-dvddir=`/bin/df /dev/sr0 | /bin/tail -n 1 | /bin/awk '{print $NF}'`
-dvdname=`/bin/basename ${dvddir}`
+dvddev=/dev/sr0
+dvdcheck=`/bin/df | /bin/grep -c ${dvddev}`
 
+if [ "x${dvdcheck}" = "x0" ]; then 
+   echo "${dvddev}: Not mounted - check dvd passthrough"
+   exit 1
+fi
+
+dvddir=`/bin/df ${dvddev} | /bin/tail -n 1 | /bin/sed -e 's/^\([^ ]* *\)\{5\}//'`
+dvdname=`/bin/basename "${dvddir}"`
 
 echo ""
 echo "Ready to copy ${dvdname} to ${dstdir}?"
@@ -31,7 +38,7 @@ echo -n "Press any key to continue..."
 read -n 1 -s
 echo ""
 
-/usr/bin/time /usr/bin/vobcopy -m -i "${dvddir}" -o "${dstdir}"
+time /usr/bin/vobcopy -m -i "${dvddir}" -o "${dstdir}"
 
 if [ $? != 0 ]; then
    echo "Copy failed"
