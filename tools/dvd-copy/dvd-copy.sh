@@ -1,6 +1,7 @@
 #!/bin/bash
 
-DEFAULT_DIR='/data/Multimedia/Videos/DVD Library/01 Raw DVD'
+#DEFAULT_DIR='/data/Multimedia/Videos/00_Raw_DVD'
+DEFAULT_DIR='/media/sf_Shared/dvd'
 
 case "$#" in
 0)
