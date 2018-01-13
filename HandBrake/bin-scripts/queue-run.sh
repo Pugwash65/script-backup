@@ -3,7 +3,8 @@
 DEBUG=0
 
 BASE=/share/homes/Steve
-export LD_LIBRARY_PATH=${BASE}/handbrake/usr/lib
+LIBPATH=${BASE}/handbrake/usr/lib
+export LD_LIBRARY_PATH=${LIBPATH}
 
 HANDBRAKE=${BASE}/handbrake/usr/bin/HandBrakeCLI
 
@@ -55,6 +56,8 @@ function run_convert() {
   /bin/cat > ${CMDFILE} <<EOT
 #!bin/bash
 
+export LD_LIBRARY_PATH=${LIBPATH}
+
 QUEUE_LOG=${QUEUE_LOG}
 HBCLI_LOG=${HBCLI_LOG}
 DEBUG=${DEBUG}
@@ -63,6 +66,7 @@ EOT
   /bin/chmod 600 ${CMDFILE}
 
   subtitle=""
+  audio=""
 
   while IFS=\= read -r key value ; do
 
@@ -72,6 +76,10 @@ EOT
 
      if [ "x${key}" = "xchapters" ]; then
         chapters="-c ${value}"
+     fi
+
+     if [ "x${key}" = "xaudio" ]; then
+        audio="-a ${value}"
      fi
 
      if [ "x${key}" = "xsubtitle" -a "x${value}" != "x0" ]; then
@@ -100,7 +108,7 @@ now=\`/bin/date +"%D %T"\`
 echo "\${now} - Encode track ${track} => ${outf}" >> ${QUEUE_LOG}
 
 if [ \${DEBUG} = 0 ]; then
-  ${HANDBRAKE} -i ${source} -Z "High Profile" -m -t ${track} -o ${output} ${subtitle} ${chapters} > ${HBCLI_LOG} 2>&1
+  ${HANDBRAKE} -i ${source} -Z "High Profile" -m -t ${track} -o ${output} ${subtitle} ${audio} ${chapters} > ${HBCLI_LOG} 2>&1
 fi
 
 now=\`/bin/date +"%D %T"\`

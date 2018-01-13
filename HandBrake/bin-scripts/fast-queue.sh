@@ -22,36 +22,50 @@ dvd_dir=`/bin/pwd`
 time=`date +%s`
 count=1
 
-while IFS=, read -r track subtitle output; do
+while IFS=, read -ra keys; do
 
-  if [ "x${track}" = "x" -o "x${subtitle}" = "x" -o "x${output}" = "x" ]; then
+  if [ ${#keys[@]} = 0 ]; then
      continue
   fi
 
-  # Extract Track
+  for k in "${keys[@]}"; do
 
-  IFS='=' read key track_num <<< "$track"
+   IFS='=' read key value <<< "$k"
 
-  if [ "${key}" != "track" ]; then
-     echo "Expecting: track=<track-number>"
-     exit
-  fi
+   if [ "x${key}" = "x" -o "x${value}" = "x" ]; then
+      echo "Expecting key and value"
+      exit 1
+   fi
 
-  # Extract Subtitle
+   case "${key}" in
+   track)
+    track_num=${value}
+    ;;
+   chapters)
+    chapters=${value}
+    ;;
+   audio)
+    audio_num=${value}
+    ;;
+   subtitle)
+    subtitle_num=${value}
+    ;;
+   output)
+    outfile=${value}
+    ;;
+   *)
+    echo "${key}: Unknown key"
+    exit 1
+   esac
+  done
 
-  IFS='=' read key subtitle_num <<< "$subtitle"
-
-  if [ "${key}" != "subtitle" ]; then
-     echo "Expecting: subtitle=<subtitle-number>"
-     exit
-  fi
-     
-  # Extract Output
-
-  IFS='=' read key outfile <<< "$output"
-
-  if [ "${key}" != "output" ]; then
+  if [ "x${outfile}" = "x" ]; then
      echo "Expecting: output=<output-file>"
+     exit
+  fi
+
+  if [ "x${track_num}" = "x" ]; then
+     echo "Expecting: track=<track-num>"
      exit
   fi
 
@@ -86,12 +100,19 @@ while IFS=, read -r track subtitle output; do
 
   let "count++"
 
-  cat > $spool_file <<EOT
-track=${track_num}
-subtitle=${subtitle_num}
-output="${outpath}"
-source="${source}"
-EOT
+  cp /dev/null ${spool_file}
+  echo track=${track_num} >> ${spool_file}
+  echo subtitle=${subtitle_num} >> ${spool_file}
+  echo output=\"${outpath}\" >> ${spool_file}
+  echo source=\"${source}\" >> ${spool_file}
+
+  if [ "x${audio_num}" != "x" ]; then
+     echo audio=${audio_num} >> ${spool_file}
+  fi
+
+  if [ "x${chapters}" != "x" ]; then
+     echo chapters=${chapters} >> ${spool_file}
+  fi
 
 done < "${DATFILE}"
 
