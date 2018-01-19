@@ -8,6 +8,10 @@ frodo-vm)
   DEFAULT_DIR='/data/Multimedia/Videos/00_Raw_DVD'
   DVDDEV=/dev/sr1
   /bin/ls /misc/cd > /dev/null
+  if [ $? != 0 ]; then
+     echo "Unable to automount DVD"
+     exit 1
+  fi
   ;;
 darnel-hurst)
   #DEFAULT_DIR='/media/sf_Shared/dvd'
