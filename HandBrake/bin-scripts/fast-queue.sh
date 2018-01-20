@@ -24,6 +24,11 @@ count=1
 
 while IFS=, read -ra keys; do
 
+  c=`echo ${keys} | grep ^#`
+  if [ "x${c}" != "x" ]; then
+     continue
+  fi
+
   if [ ${#keys[@]} = 0 ]; then
      continue
   fi
