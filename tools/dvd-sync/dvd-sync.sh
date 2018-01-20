@@ -1,10 +1,23 @@
 #!/bin/bash
 
 DST_DIR='/data/Multimedia/Videos/00_Temp_DVD'
-SRC_DIR='/media/sf_Shared/dvd/'
+SRC_BASE='/media/sf_FullDisc'
+
+if [ $# != 1 ]; then
+   echo "Usage: dvd-sync.sh <DVD Folder>"
+   exit 1
+fi
+
+dvd_dir=$1
+dvd_folder=`/bin/basename ${dvd_dir}`
 
 dstdir=${DST_DIR}
-srcdir=${SRC_DIR}
+srcdir=${SRC_BASE}/${dvd_folder}
+
+if [ ! -d "${srcdir}" ]; then
+   echo "${srcdir}: Directory does not exist"
+   exit 1
+fi
 
 if [ ! -d "${dstdir}" ]; then
    echo "${dstdir}: Directory does not exist"
