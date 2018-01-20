@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DST_DIR='/data/Multimedia/Videos/00_Raw_DVD'
+DST_DIR='/data/Multimedia/Videos/00_Temp_DVD'
 SRC_DIR='/media/sf_Shared/dvd/'
 
 dstdir=${DST_DIR}

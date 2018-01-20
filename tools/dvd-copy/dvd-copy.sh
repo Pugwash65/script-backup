@@ -5,7 +5,7 @@ hostname=`/bin/uname -n`
 case ${hostname} in
 
 frodo-vm)
-  DEFAULT_DIR='/data/Multimedia/Videos/00_Raw_DVD'
+  DEFAULT_DIR='/data/Multimedia/Videos/00_Temp_DVD'
   DVDDEV=/dev/sr1
   /bin/ls /misc/cd > /dev/null
   if [ $? != 0 ]; then
