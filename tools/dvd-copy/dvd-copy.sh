@@ -1,6 +1,27 @@
 #!/bin/bash
 
-DEFAULT_DIR='/data/Multimedia/Videos/DVD Library/01 Raw DVD'
+hostname=`/bin/uname -n`
+
+case ${hostname} in
+
+frodo-vm)
+  DEFAULT_DIR='/data/Multimedia/Videos/00_Temp_DVD'
+  DVDDEV=/dev/sr1
+  /bin/ls /misc/cd > /dev/null
+  if [ $? != 0 ]; then
+     echo "Unable to automount DVD"
+     exit 1
+  fi
+  ;;
+darnel-hurst)
+  #DEFAULT_DIR='/media/sf_Shared/dvd'
+  DEFAULT_DIR='/media/sf_FullDisc'
+  DVDDEV=/dev/sr0
+  ;;
+*)
+  echo "${hostname}: Unknown host"
+  exit 1
+esac
 
 case "$#" in
 0)
@@ -19,16 +40,29 @@ if [ ! -d "${dstdir}" ]; then
    exit 1
 fi
 
-dvddev=/dev/sr0
-dvdcheck=`/bin/df | /bin/grep -c ${dvddev}`
+dvdcheck=`/bin/df | /bin/grep -c ${DVDDEV}`
 
 if [ "x${dvdcheck}" = "x0" ]; then 
-   echo "${dvddev}: Not mounted - check dvd passthrough"
+   echo "${DVDDEV}: Not mounted - check dvd passthrough"
    exit 1
 fi
 
-dvddir=`/bin/df ${dvddev} | /bin/tail -n 1 | /bin/sed -e 's/^\([^ ]* *\)\{5\}//'`
-dvdname=`/bin/basename "${dvddir}"`
+dvddir=`/bin/df ${DVDDEV} | /bin/tail -n 1 | /bin/sed -e 's/^\([^ ]* *\)\{5\}//'`
+
+#dvdname=`/bin/basename "${dvddir}"`
+
+dvdinfo=`/usr/sbin/blkid ${DVDDEV}`
+if [ "x${dvdinfo}" = "x" ]; then
+   echo "Unable to find DVD label"
+   exit 1
+fi
+
+dvdname=`echo ${dvdinfo} | /bin/awk '{print $3}' | /bin/awk -F= '{print $2}'`
+
+if [ "x${dvdname}" = "x" ]; then
+   echo "Unable to extract DVD name"
+   exit 1
+fi
 
 echo ""
 echo "Ready to copy ${dvdname} to ${dstdir}?"
