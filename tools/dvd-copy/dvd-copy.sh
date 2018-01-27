@@ -18,6 +18,10 @@ darnel-hurst)
   DEFAULT_DIR='/media/sf_FullDisc'
   DVDDEV=/dev/sr0
   ;;
+thorin)
+  DEFAULT_DIR='/data/private/00_Temp_DVD'
+  DVDDEV=/dev/sr0
+  ;;
 *)
   echo "${hostname}: Unknown host"
   exit 1
