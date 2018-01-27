@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# Check libdvdcss is available
+
+/usr/bin/rpm -q libdvdcss 2>&1 > /dev/null
+
+if [ $? != 0 ]; then
+   echo "libdvdcss is not available"
+   exit 1
+fi
+
 hostname=`/bin/uname -n`
 
 case ${hostname} in
