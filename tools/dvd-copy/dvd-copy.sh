@@ -28,7 +28,7 @@ darnel-hurst)
   DVDDEV=/dev/sr0
   ;;
 thorin)
-  DEFAULT_DIR='/data/private/00_Temp_DVD'
+  DEFAULT_DIR='/home/private/00_Temp_DVD'
   DVDDEV=/dev/sr0
   ;;
 *)
