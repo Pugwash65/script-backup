@@ -1,7 +1,21 @@
 #!/bin/bash
 
+hostname=`/bin/uname -n`
+
+case ${hostname} in
+
+darnel-hurst)
+  SRC_BASE='/media/sf_FullDisc'
+  ;;
+thorin)
+  SRC_BASE='/home/private/00_Temp_DVD'
+  ;;
+*)
+  echo "${hostname}: Unknown host"
+  exit 1
+esac
+
 DST_DIR='/data/Multimedia/Videos/00_Temp_DVD'
-SRC_BASE='/media/sf_FullDisc'
 
 if [ $# != 1 ]; then
    echo "Usage: dvd-sync.sh <DVD Folder>"
