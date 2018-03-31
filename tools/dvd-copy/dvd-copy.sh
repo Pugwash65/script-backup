@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# Check libdvdcss is available
+
+/usr/bin/rpm -q libdvdcss 2>&1 > /dev/null
+
+if [ $? != 0 ]; then
+   echo "libdvdcss is not available"
+   exit 1
+fi
+
 hostname=`/bin/uname -n`
 
 case ${hostname} in
@@ -16,6 +25,10 @@ frodo-vm)
 darnel-hurst)
   #DEFAULT_DIR='/media/sf_Shared/dvd'
   DEFAULT_DIR='/media/sf_FullDisc'
+  DVDDEV=/dev/sr0
+  ;;
+thorin)
+  DEFAULT_DIR='/home/private/00_Temp_DVD'
   DVDDEV=/dev/sr0
   ;;
 *)
