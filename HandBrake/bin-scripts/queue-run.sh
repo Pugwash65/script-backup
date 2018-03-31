@@ -2,11 +2,21 @@
 
 DEBUG=0
 
-BASE=/share/homes/Steve
-LIBPATH=${BASE}/handbrake/usr/lib
-export LD_LIBRARY_PATH=${LIBPATH}
+hostname=`/bin/uname -n`
 
-HANDBRAKE=${BASE}/handbrake/usr/bin/HandBrakeCLI
+case "${hostname}" in
+thorin)
+  BASE=/home/private
+  HANDBRAKE=/usr/bin/HandBrakeCLI
+  ;;
+*)
+  BASE=/share/homes/Steve
+  LIBPATH=${BASE}/handbrake/usr/lib
+  export LD_LIBRARY_PATH=${LIBPATH}
+
+  HANDBRAKE=${BASE}/handbrake/usr/bin/HandBrakeCLI
+  ;;
+esac
 
 QUEUE_LOG=${BASE}/process.log
 HBCLI_LOG=${BASE}/hb-cli.log

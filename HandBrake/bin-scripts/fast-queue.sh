@@ -1,11 +1,23 @@
 #!/bin/sh
 
+hostname=`/bin/uname -n`
+
+case "${hostname}" in
+thorin)
+  BASE=/home/private
+  QUEUE=${BASE}/spool/queue
+  RUN_QUEUE=/home/smp/home/script-backup/HandBrake/bin-scripts/queue-run.sh
+  ;;
+*)
+  BASE=/share/homes/Steve
+  QUEUE=${BASE}/spool/queue
+  RUN_QUEUE=${BASE}/bin/queue-run.sh
+  ;;
+esac
+
 DATFILE='encode.dat'
 VIDEOTS='VIDEO_TS'
 
-BASE=/share/homes/Steve
-RUN_QUEUE=${BASE}/bin/queue-run.sh
-QUEUE=${BASE}/spool/queue
 
 if [ ! -f ${DATFILE} ]; then
    echo "${DATFILE}: Not present"
