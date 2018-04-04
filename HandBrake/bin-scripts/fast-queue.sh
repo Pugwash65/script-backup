@@ -45,6 +45,8 @@ while IFS=, read -ra keys; do
      continue
   fi
 
+  # Values to be separated by commas are represented by plus sign in fast-queue file
+
   for k in "${keys[@]}"; do
 
    IFS='=' read key value <<< "$k"
@@ -53,6 +55,8 @@ while IFS=, read -ra keys; do
       echo "Expecting key and value"
       exit 1
    fi
+
+   value=`echo $value | /bin/sed -e 's/+/,/g'`
 
    case "${key}" in
    track)
