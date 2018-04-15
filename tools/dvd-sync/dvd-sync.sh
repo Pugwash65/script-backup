@@ -46,7 +46,7 @@ echo -n "Press any key to continue..."
 read -n 1 -s
 echo ""
 
-time /usr/bin/rsync -av --delete --progress "${srcdir}" "${dstdir}"
+time /usr/bin/rsync -av --delete --exclude .@__thumb --progress "${srcdir}" "${dstdir}"
 
 if [ $? != 0 ]; then
    echo "Sync failed"
