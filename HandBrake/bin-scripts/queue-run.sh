@@ -2,11 +2,21 @@
 
 DEBUG=0
 
-BASE=/share/homes/Steve
-LIBPATH=${BASE}/handbrake/usr/lib
-export LD_LIBRARY_PATH=${LIBPATH}
+hostname=`/bin/uname -n`
 
-HANDBRAKE=${BASE}/handbrake/usr/bin/HandBrakeCLI
+case "${hostname}" in
+thorin)
+  BASE=/home/private
+  HANDBRAKE=/usr/bin/HandBrakeCLI
+  ;;
+*)
+  BASE=/share/homes/Steve
+  LIBPATH=${BASE}/handbrake/usr/lib
+  export LD_LIBRARY_PATH=${LIBPATH}
+
+  HANDBRAKE=${BASE}/handbrake/usr/bin/HandBrakeCLI
+  ;;
+esac
 
 QUEUE_LOG=${BASE}/process.log
 HBCLI_LOG=${BASE}/hb-cli.log
@@ -108,7 +118,8 @@ now=\`/bin/date +"%D %T"\`
 echo "\${now} - Encode track ${track} => ${outf}" >> ${QUEUE_LOG}
 
 if [ \${DEBUG} = 0 ]; then
-  ${HANDBRAKE} -i ${source} -Z "High Profile" -m -t ${track} -o ${output} ${subtitle} ${audio} ${chapters} > ${HBCLI_LOG} 2>&1
+##  ${HANDBRAKE} -i ${source} -Z "High Profile"  --non-anamorphic --modulus 2 --keep-display-aspect -m -t ${track} -o ${output} ${subtitle} ${audio} ${chapters} > ${HBCLI_LOG} 2>&1
+  ${HANDBRAKE} -i ${source} -Z "HQ 576p25 Surround"  --encoder-level 4.1 --non-anamorphic --modulus 2 --keep-display-aspect -m -t ${track} -o ${output} ${subtitle} ${audio} ${chapters} > ${HBCLI_LOG} 2>&1
 fi
 
 now=\`/bin/date +"%D %T"\`

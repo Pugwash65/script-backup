@@ -1,11 +1,23 @@
 #!/bin/sh
 
+hostname=`/bin/uname -n`
+
+case "${hostname}" in
+thorin)
+  BASE=/home/private
+  QUEUE=${BASE}/spool/queue
+  RUN_QUEUE=/home/smp/home/script-backup/HandBrake/bin-scripts/queue-run.sh
+  ;;
+*)
+  BASE=/share/homes/Steve
+  QUEUE=${BASE}/spool/queue
+  RUN_QUEUE=${BASE}/bin/queue-run.sh
+  ;;
+esac
+
 DATFILE='encode.dat'
 VIDEOTS='VIDEO_TS'
 
-BASE=/share/homes/Steve
-RUN_QUEUE=${BASE}/bin/queue-run.sh
-QUEUE=${BASE}/spool/queue
 
 if [ ! -f ${DATFILE} ]; then
    echo "${DATFILE}: Not present"
@@ -33,6 +45,8 @@ while IFS=, read -ra keys; do
      continue
   fi
 
+  # Values to be separated by commas are represented by plus sign in fast-queue file
+
   for k in "${keys[@]}"; do
 
    IFS='=' read key value <<< "$k"
@@ -41,6 +55,8 @@ while IFS=, read -ra keys; do
       echo "Expecting key and value"
       exit 1
    fi
+
+   value=`echo $value | /bin/sed -e 's/+/,/g'`
 
    case "${key}" in
    track)
