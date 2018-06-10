@@ -33,6 +33,12 @@ if [ ! -d "${srcdir}" ]; then
    exit 1
 fi
 
+if [ ! -d "${srcdir}/VIDEO_TS" ]; then
+   echo "${srcdir}: VIDEO_TS Directory does not exist"
+   echo "Check what you are doing carefully"
+   exit 1
+fi
+
 if [ ! -d "${dstdir}" ]; then
    echo "${dstdir}: Directory does not exist"
    exit 1
