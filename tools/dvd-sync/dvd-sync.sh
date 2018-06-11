@@ -39,6 +39,13 @@ if [ ! -d "${srcdir}/VIDEO_TS" ]; then
    exit 1
 fi
 
+mp4=`/bin/ls ${dstdir}/${dvd_folder}/*.mp4 2>/dev/null`
+if [ ! -z "${mp4}" ]; then
+   echo "${dstdir}/${dvd_folder}: Contains mp4 files"
+   echo "Check what you are doing carefully"
+   exit 1
+fi
+
 if [ ! -d "${dstdir}" ]; then
    echo "${dstdir}: Directory does not exist"
    exit 1
