@@ -165,8 +165,8 @@ echo $$ > ${LOCKFILE}
 #cp /dev/null ${QUEUE_LOG}
 
 now=`/bin/date +"%D %T"`
-echo "${now} - Starting Run" >> ${QUEUE_LOG}
 echo "" >> ${QUEUE_LOG}
+echo "${now} - Starting Run" >> ${QUEUE_LOG}
 
 # Loop over queue dir in case a job was queued during current run
 
