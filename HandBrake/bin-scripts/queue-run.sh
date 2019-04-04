@@ -75,8 +75,12 @@ EOT
 
   /bin/chmod 600 ${CMDFILE}
 
+  preset="HQ 576p25 Surround"
+  encoder_level="--encoder-level 4.1"
+  audio_options=""
   subtitle=""
   audio=""
+  smaller=""
 
   while IFS=\= read -r key value ; do
 
@@ -103,6 +107,14 @@ EOT
      if [ "x${key}" = "xsource" ]; then
         source="${value}"
      fi
+
+     if [ "x${key}" = "xsmaller" ]; then
+        smaller="${value}"
+	preset="Fast 576p25"
+	encoder_level=""
+	audio_options="--ab 128"
+     fi
+
   done <"$file"
 
   outf=`basename "${output}"`
@@ -119,7 +131,7 @@ echo "\${now} - Encode track ${track} => ${outf}" >> ${QUEUE_LOG}
 
 if [ \${DEBUG} = 0 ]; then
 ##  ${HANDBRAKE} -i ${source} -Z "High Profile"  --non-anamorphic --modulus 2 --keep-display-aspect -m -t ${track} -o ${output} ${subtitle} ${audio} ${chapters} > ${HBCLI_LOG} 2>&1
-  ${HANDBRAKE} -i ${source} -Z "HQ 576p25 Surround"  --encoder-level 4.1 --non-anamorphic --modulus 2 --keep-display-aspect -m -t ${track} -o ${output} ${subtitle} ${audio} ${chapters} > ${HBCLI_LOG} 2>&1
+  ${HANDBRAKE} -i ${source} -Z "${preset}"  ${encoder_level} --non-anamorphic --modulus 2 --keep-display-aspect -m -t ${track} -o ${output} ${subtitle} ${audio} ${audio_options} ${chapters} > ${HBCLI_LOG} 2>&1
 fi
 
 now=\`/bin/date +"%D %T"\`

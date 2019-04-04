@@ -74,6 +74,9 @@ while IFS=, read -ra keys; do
    output)
     outfile=${value}
     ;;
+   smaller)
+    smaller=${value}
+    ;;
    *)
     echo "${key}: Unknown key"
     exit 1
@@ -133,6 +136,10 @@ while IFS=, read -ra keys; do
 
   if [ "x${chapters}" != "x" ]; then
      echo chapters=${chapters} >> ${spool_file}
+  fi
+
+  if [ "x${smaller}" != "x" ]; then
+     echo smaller=${smaller} >> ${spool_file}
   fi
 
 done < "${DATFILE}"
