@@ -74,6 +74,9 @@ while IFS=, read -ra keys; do
    output)
     outfile=${value}
     ;;
+   quality)
+    quality=${value}
+    ;;
    smaller)
     smaller=${value}
     ;;
@@ -120,7 +123,8 @@ while IFS=, read -ra keys; do
      exit 1
   fi
 
-  spool_file="${QUEUE}/${time}-${count}.cnv"
+##  spool_file="${QUEUE}/${time}-${count}.cnv"
+  spool_file="/dev/tty"
 
   let "count++"
 
@@ -138,6 +142,10 @@ while IFS=, read -ra keys; do
      echo chapters=${chapters} >> ${spool_file}
   fi
 
+  if [ "x${quality}" != "x" ]; then
+     echo quality=${quality} >> ${spool_file}
+  fi
+
   if [ "x${smaller}" != "x" ]; then
      echo smaller=${smaller} >> ${spool_file}
   fi
@@ -149,8 +157,9 @@ echo "Conversion queued"
 c=`/bin/ps -ef | /bin/grep queue-run.sh | /bin/grep -v grep -c`
 
 if [ $c = 0 ]; then
-   echo "Starting queue run..."
-   ${RUN_QUEUE}
+#   echo "Starting queue run..."
+#   ${RUN_QUEUE}
+    echo "QUEUE RUN BYPASS"
 fi
 
 exit 0
