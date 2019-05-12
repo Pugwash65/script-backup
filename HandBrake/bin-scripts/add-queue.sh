@@ -14,7 +14,7 @@ thorin)
 esac
 
 if [ "x${1}" = "x" ]; then
-   echo "Usage: add-queue.sh <outfile> [comment]"
+   echo "Usage: add-queue.sh <outpath> [comment]"
    exit 1
 else
    outpath="${1}"

@@ -168,7 +168,7 @@ while IFS=, read -ra keys; do
   
   comment="Encode track ${track} => ${outfile}"
 
-  echo "${hbcmd}" | add-queue.sh "${outfile}" "${comment}"
+  echo "${hbcmd}" | add-queue.sh "${outpath}" "${comment}"
 
 ##  spool_file="${QUEUE}/${time}-${count}.cnv"
 ##
