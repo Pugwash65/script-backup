@@ -8,6 +8,7 @@ case "${hostname}" in
 thorin)
   BASE=/home/private
   HANDBRAKE=/usr/bin/HandBrakeCLI
+  RUN_QUEUE=/home/smp/home/script-backup/HandBrake/bin-scripts/queue-run.sh
   ;;
 *)
   BASE=/share/homes/Steve
@@ -15,6 +16,7 @@ thorin)
   export LD_LIBRARY_PATH=${LIBPATH}
 
   HANDBRAKE=${BASE}/handbrake/usr/bin/HandBrakeCLI
+  RUN_QUEUE=${BASE}/bin/queue-run.sh
   ;;
 esac
 
@@ -213,9 +215,8 @@ done < "${DATFILE}"
 c=`/bin/ps -ef | /bin/grep queue-run.sh | /bin/grep -v grep -c`
 
 if [ $c = 0 ]; then
-###   echo "Starting queue run..."
-###   ${RUN_QUEUE}
-    echo "QUEUE RUN BYPASS"
+   echo "Starting queue run..."
+   ${RUN_QUEUE}
 fi
 
 exit 0

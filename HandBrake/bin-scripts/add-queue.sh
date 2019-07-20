@@ -29,7 +29,7 @@ fi
 time=`date +%s`
 count=1
 
-while [ ${count} -lt 20 ]; do
+while [ ${count} -lt 50 ]; do
 
    spool_file="${QUEUE}/${time}-${count}.cnv"
 
@@ -48,8 +48,8 @@ OUTPATH="${outpath}"
 if [ "x\${OUTPATH}" != "x" ]; then
    OUTFILE=\`/usr/bin/basename "\${OUTPATH}"\`
 
-   /bin/touch \${OUTPATH}
-   /bin/chmod 644 \${OUTPATH}
+   /bin/touch "\${OUTPATH}"
+   /bin/chmod 644 "\${OUTPATH}"
 fi
 
 if [ "x\${QUEUE_LOG}" != "x" ]; then
