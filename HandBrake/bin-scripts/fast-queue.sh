@@ -2,6 +2,16 @@
 
 hostname=`/bin/uname -n`
 
+if [ "x${1}" = "x--real" ]; then
+   realdvd=1
+   dvd_dir=$(/bin/df /dev/sr0 | /bin/tail -n 1 | /bin/awk '{print $NF}')
+   out_dir=`/bin/pwd`
+else
+   realdvd=
+   dvd_dir=`/bin/pwd`
+   out_dir="${dvd_dir}"
+fi
+
 case "${hostname}" in
 thorin)
   BASE=/home/private
@@ -24,12 +34,10 @@ if [ ! -f ${DATFILE} ]; then
    exit 1
 fi
 
-if [ ! -d ${VIDEOTS} ]; then
+if [ ! -d ${dvd_dir}/${VIDEOTS} ]; then
    echo "${VIDEOTS}: Not present"
    exit 1
 fi
-
-dvd_dir=`/bin/pwd`
 
 time=`date +%s`
 count=1
@@ -94,7 +102,7 @@ while IFS=, read -ra keys; do
 
   source="${dvd_dir}/${VIDEOTS}"
 
-  outpath="${dvd_dir}/${outfile}"
+  outpath="${out_dir}/${outfile}"
 
   ext="${outfile##*.}"
 
