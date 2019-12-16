@@ -33,6 +33,19 @@ if [ ! -d "${srcdir}" ]; then
    exit 1
 fi
 
+if [ ! -d "${srcdir}/VIDEO_TS" ]; then
+   echo "${srcdir}: VIDEO_TS Directory does not exist"
+   echo "Check what you are doing carefully"
+   exit 1
+fi
+
+mp4=`/bin/ls ${dstdir}/${dvd_folder}/*.mp4 2>/dev/null`
+if [ ! -z "${mp4}" ]; then
+   echo "${dstdir}/${dvd_folder}: Contains mp4 files"
+   echo "Check what you are doing carefully"
+   exit 1
+fi
+
 if [ ! -d "${dstdir}" ]; then
    echo "${dstdir}: Directory does not exist"
    exit 1
@@ -46,7 +59,7 @@ echo -n "Press any key to continue..."
 read -n 1 -s
 echo ""
 
-time /usr/bin/rsync -av --progress "${srcdir}" "${dstdir}"
+time /usr/bin/rsync -av --delete --exclude .@__thumb --progress "${srcdir}" "${dstdir}"
 
 if [ $? != 0 ]; then
    echo "Sync failed"

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+DEBUG=0
+
 hostname=`/bin/uname -n`
 
 if [ "x${1}" = "x--real" ]; then
@@ -15,19 +17,21 @@ fi
 case "${hostname}" in
 thorin)
   BASE=/home/private
-  QUEUE=${BASE}/spool/queue
+  HANDBRAKE=/usr/bin/HandBrakeCLI
   RUN_QUEUE=/home/smp/home/script-backup/HandBrake/bin-scripts/queue-run.sh
   ;;
 *)
   BASE=/share/homes/Steve
-  QUEUE=${BASE}/spool/queue
+  LIBPATH=${BASE}/handbrake/usr/lib
+  export LD_LIBRARY_PATH=${LIBPATH}
+
+  HANDBRAKE=${BASE}/handbrake/usr/bin/HandBrakeCLI
   RUN_QUEUE=${BASE}/bin/queue-run.sh
   ;;
 esac
 
 DATFILE='encode.dat'
 VIDEOTS='VIDEO_TS'
-
 
 if [ ! -f ${DATFILE} ]; then
    echo "${DATFILE}: Not present"
@@ -38,6 +42,9 @@ if [ ! -d ${dvd_dir}/${VIDEOTS} ]; then
    echo "${VIDEOTS}: Not present"
    exit 1
 fi
+
+dir=`/usr/bin/dirname $0`
+PATH=${dir}:${PATH}
 
 time=`date +%s`
 count=1
@@ -53,6 +60,20 @@ while IFS=, read -ra keys; do
      continue
   fi
 
+  # Values to be separated by commas are represented by plus sign in fast-queue file
+
+  track=
+  audio=
+  subtitle=
+  chapters=
+  outfile=
+  source=
+  quality=
+  smaller=
+  preset="HQ 576p25 Surround"
+  encoder_level="--encoder-level 4.1"
+  encoder_options=""
+
   for k in "${keys[@]}"; do
 
    IFS='=' read key value <<< "$k"
@@ -62,21 +83,29 @@ while IFS=, read -ra keys; do
       exit 1
    fi
 
+   value=`echo $value | /bin/sed -e 's/+/,/g'`
+
    case "${key}" in
    track)
-    track_num=${value}
+    track=${value}
     ;;
    chapters)
     chapters=${value}
     ;;
    audio)
-    audio_num=${value}
+    audio=${value}
     ;;
    subtitle)
-    subtitle_num=${value}
+    subtitle=${value}
     ;;
    output)
     outfile=${value}
+    ;;
+   quality)
+    quality=${value}
+    ;;
+   smaller)
+    smaller=${value}
     ;;
    *)
     echo "${key}: Unknown key"
@@ -89,7 +118,7 @@ while IFS=, read -ra keys; do
      exit
   fi
 
-  if [ "x${track_num}" = "x" ]; then
+  if [ "x${track}" = "x" ]; then
      echo "Expecting: track=<track-num>"
      exit
   fi
@@ -121,27 +150,75 @@ while IFS=, read -ra keys; do
      exit 1
   fi
 
-  spool_file="${QUEUE}/${time}-${count}.cnv"
-
-  let "count++"
-
-  cp /dev/null ${spool_file}
-  echo track=${track_num} >> ${spool_file}
-  echo subtitle=${subtitle_num} >> ${spool_file}
-  echo output=\"${outpath}\" >> ${spool_file}
-  echo source=\"${source}\" >> ${spool_file}
-
-  if [ "x${audio_num}" != "x" ]; then
-     echo audio=${audio_num} >> ${spool_file}
-  fi
-
   if [ "x${chapters}" != "x" ]; then
-     echo chapters=${chapters} >> ${spool_file}
+     chapters="-c ${chapters}"
   fi
+
+  if [ "x${audio}" != "x" ]; then
+     audio="-a ${audio}"
+  fi
+
+  if [ "x${subtitle}" != "x" -a "x${subtitle}" != "x0" ]; then
+     subtitle="-s ${subtitle}"
+  else
+     subtitle=
+  fi
+
+  if [ "x${quality}" != "x" ]; then
+     quality="-q ${quality}"
+  fi
+
+  if [ "x${smaller}" != "x" ]; then
+     preset="Fast 576p25"
+     encoder_level=""
+     encoder_options="--ab 128"
+  fi
+
+  hbcmd="\${HANDBRAKE} -i \"${source}\" -Z \"${preset}\" ${quality} ${encoder_level} --non-anamorphic --modulus 2 --keep-display-aspect -m -t ${track} -o \"${outpath}\" ${subtitle} ${audio} ${encoder_options} ${chapters}"
+  
+  comment="Encode track ${track} => ${outfile}"
+
+  echo "${hbcmd}" | add-queue.sh "${outpath}" "${comment}"
+
+##  spool_file="${QUEUE}/${time}-${count}.cnv"
+##
+##  let "count++"
+##
+##  /bin/cat > ${spool_file} <<EOT
+###!/bin/bash
+##
+##export LD_LIBRARY_PATH=${LIBPATH}
+##
+##QUEUE_LOG=${QUEUE_LOG}
+##HBCLI_LOG=${HBCLI_LOG}
+##DEBUG=${DEBUG}
+##
+##OUTPATH="${outpath}"
+##OUTFILE="${outfile}"
+##
+##/bin/touch \${OUTPATH}
+##/bin/chmod 644 \${OUTPATH}
+##
+##now=\`/bin/date +"%D %T"\`
+##
+##echo "\${now} - Encode track ${track} => \${OUTFILE}" >> ${QUEUE_LOG}
+##
+##${hbcmd}
+##
+##status=\$?
+##
+##now=\`/bin/date +"%D %T"\`
+##
+##if [ \${status} = 0 ]; then
+##  echo "\${now} - completed: \${OUTFILE}" >> ${QUEUE_LOG}
+##else
+##  echo "\${now} -    failed: \${OUTFILE}" >> ${QUEUE_LOG}
+##  exit 1
+##fi
+##
+##EOT
 
 done < "${DATFILE}"
-
-echo "Conversion queued"
 
 c=`/bin/ps -ef | /bin/grep queue-run.sh | /bin/grep -v grep -c`
 

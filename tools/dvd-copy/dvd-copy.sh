@@ -16,9 +16,10 @@ case ${hostname} in
 frodo-vm)
   DEFAULT_DIR='/data/Multimedia/Videos/00_Temp_DVD'
   DVDDEV=/dev/sr1
+
   /bin/ls /misc/cd > /dev/null
   if [ $? != 0 ]; then
-     echo "Unable to automount DVD"
+     echo "Unable to automount DVD - Check USB passthrough in NAS GUI"
      exit 1
   fi
   ;;
