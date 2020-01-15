@@ -8,7 +8,7 @@ case "${hostname}" in
 thorin)
   BASE=/home/private
   HANDBRAKE=/usr/bin/HandBrakeCLI
-  RUN_QUEUE=/home/smp/home/script-backup/HandBrake/bin-scripts/queue-run.sh
+#  RUN_QUEUE=/home/smp/home/script-backup/HandBrake/bin-scripts/queue-run.sh
   ;;
 *)
   BASE=/share/homes/Steve
@@ -16,7 +16,7 @@ thorin)
   export LD_LIBRARY_PATH=${LIBPATH}
 
   HANDBRAKE=${BASE}/handbrake/usr/bin/HandBrakeCLI
-  RUN_QUEUE=${BASE}/bin/queue-run.sh
+#  RUN_QUEUE=${BASE}/bin/queue-run.sh
   ;;
 esac
 
@@ -172,52 +172,14 @@ while IFS=, read -ra keys; do
 
   echo "${hbcmd}" | add-queue.sh "${outpath}" "${comment}"
 
-##  spool_file="${QUEUE}/${time}-${count}.cnv"
-##
-##  let "count++"
-##
-##  /bin/cat > ${spool_file} <<EOT
-###!/bin/bash
-##
-##export LD_LIBRARY_PATH=${LIBPATH}
-##
-##QUEUE_LOG=${QUEUE_LOG}
-##HBCLI_LOG=${HBCLI_LOG}
-##DEBUG=${DEBUG}
-##
-##OUTPATH="${outpath}"
-##OUTFILE="${outfile}"
-##
-##/bin/touch \${OUTPATH}
-##/bin/chmod 644 \${OUTPATH}
-##
-##now=\`/bin/date +"%D %T"\`
-##
-##echo "\${now} - Encode track ${track} => \${OUTFILE}" >> ${QUEUE_LOG}
-##
-##${hbcmd}
-##
-##status=\$?
-##
-##now=\`/bin/date +"%D %T"\`
-##
-##if [ \${status} = 0 ]; then
-##  echo "\${now} - completed: \${OUTFILE}" >> ${QUEUE_LOG}
-##else
-##  echo "\${now} -    failed: \${OUTFILE}" >> ${QUEUE_LOG}
-##  exit 1
-##fi
-##
-##EOT
-
 done < "${DATFILE}"
 
-c=`/bin/ps -ef | /bin/grep queue-run.sh | /bin/grep -v grep -c`
-
-if [ $c = 0 ]; then
-   echo "Starting queue run..."
-   ${RUN_QUEUE}
-fi
+#c=`/bin/ps -ef | /bin/grep queue-run.sh | /bin/grep -v grep -c`
+#
+#if [ $c = 0 ]; then
+#   echo "Starting queue run..."
+#   ${RUN_QUEUE}
+#fi
 
 exit 0
 

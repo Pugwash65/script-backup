@@ -6,10 +6,12 @@ case "${hostname}" in
 thorin)
   BASE=/home/private
   QUEUE=${BASE}/spool/queue
+  RUN_QUEUE=/home/smp/home/script-backup/HandBrake/bin-scripts/queue-run.sh
   ;;
 *)
   BASE=/share/homes/Steve
   QUEUE=${BASE}/spool/queue
+  RUN_QUEUE=${BASE}/bin/queue-run.sh
   ;;
 esac
 
@@ -80,6 +82,13 @@ exit \${status}
 EOT
 
 echo "Conversion queued"
+
+c=`/bin/ps -ef | /bin/grep queue-run.sh | /bin/grep -v grep -c`
+
+if [ $c = 0 ]; then
+   echo "Starting queue run..."
+   ${RUN_QUEUE}
+fi
 
 exit 0
 
