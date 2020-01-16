@@ -63,8 +63,9 @@ else
 fi
 
 preset="HQ 576p25 Surround"
+encoder_level="--encoder-level 4.1"
 
-hbcmd="\${HANDBRAKE} -i \"${source}\" -Z \"${preset}\" ${quality} ${encoder_level} --non-anamorphic --modulus 2 --keep-display-aspect -m -t ${track} -o \"${outpath}\" ${subtitle} ${audio} ${encoder_options} ${chapters}"
+hbcmd="\${HANDBRAKE} -i \"${source}\" -Z \"${preset}\" ${quality} ${encoder_level} --non-anamorphic --modulus 2 --keep-display-aspect -m -o \"${outpath}\" ${subtitle} ${audio} ${encoder_options} ${chapters}"
   
 comment="Encode track ${track} => ${outfile}"
 

@@ -58,8 +58,7 @@ function run_convert() {
 
   success=1
 
-  sh -x ${file} >${HBCLI_LOG} 2>&1
-##  sh ${file} >${HBCLI_LOG} 2>&1
+  sh ${file} >${HBCLI_LOG} 2>&1
 
   if [ $? = 0 ]; then
      /bin/mv ${file} ${DONE_DIR}
