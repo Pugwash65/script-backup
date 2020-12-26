@@ -6,7 +6,7 @@ WINBASE="D:\\Media\\DVD Library\\FullDisc\\"
 hostname=`/bin/uname -n`
 
 case "${hostname}" in
-thorin)
+thorin|thrain)
   BASE=/home/private
   ;;
 *)

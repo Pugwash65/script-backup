@@ -3,7 +3,7 @@
 hostname=`/bin/uname -n`
 
 case "${hostname}" in
-thorin)
+thorin|thrain)
   BASE=/home/private
   QUEUE=${BASE}/spool/queue
   RUN_QUEUE=/home/smp/home/script-backup/HandBrake/bin-scripts/queue-run.sh

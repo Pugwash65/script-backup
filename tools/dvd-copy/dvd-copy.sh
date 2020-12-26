@@ -28,7 +28,7 @@ darnel-hurst)
   DEFAULT_DIR='/media/sf_FullDisc'
   DVDDEV=/dev/sr0
   ;;
-thorin)
+thorin|thrain)
   DEFAULT_DIR='/home/private/00_Temp_DVD'
   DVDDEV=/dev/sr0
   ;;

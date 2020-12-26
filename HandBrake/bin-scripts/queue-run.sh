@@ -5,7 +5,7 @@ DEBUG=0
 hostname=`/bin/uname -n`
 
 case "${hostname}" in
-thorin)
+thorin|thrain)
   BASE=/home/private
   export HANDBRAKE=/usr/bin/HandBrakeCLI
   ;;

@@ -6,16 +6,17 @@ case ${hostname} in
 
 darnel-hurst)
   SRC_BASE='/media/sf_FullDisc'
+  DST_DIR='/data/Multimedia/Videos/00_Temp_DVD'
   ;;
-thorin)
+thorin|thrain)
   SRC_BASE='/home/private/00_Temp_DVD'
+  DST_DIR='Steve@frodo-vm:/data/Multimedia/Videos/00_Temp_DVD'
   ;;
 *)
   echo "${hostname}: Unknown host"
   exit 1
 esac
 
-DST_DIR='/data/Multimedia/Videos/00_Temp_DVD'
 
 if [ $# != 1 ]; then
    echo "Usage: dvd-sync.sh <DVD Folder>"
@@ -39,16 +40,41 @@ if [ ! -d "${srcdir}/VIDEO_TS" ]; then
    exit 1
 fi
 
-mp4=`/bin/ls ${dstdir}/${dvd_folder}/*.mp4 2>/dev/null`
-if [ ! -z "${mp4}" ]; then
-   echo "${dstdir}/${dvd_folder}: Contains mp4 files"
-   echo "Check what you are doing carefully"
-   exit 1
-fi
+c=$(echo ${dstdir} | /bin/grep -c :)
 
-if [ ! -d "${dstdir}" ]; then
-   echo "${dstdir}: Directory does not exist"
-   exit 1
+if [ ${c} = 1 ]; then
+
+   host=$(echo ${dstdir} | awk -F: '{print $1}')
+   dir=$(echo ${dstdir} | awk -F: '{print $2}')
+
+# FIX THIS
+#   if [ ! -d "${dstdir}" ]; then
+#      echo "${dstdir}: Directory does not exist"
+#      exit 1
+#   fi
+
+   mp4=`ssh ${host} /bin/ls ${dir}/${dvd_folder} | grep -c mp4 2>/dev/null`
+   if [ ${mp4} = 1 ]; then
+      echo ""
+      echo "${dstdir}/${dvd_folder}: Contains mp4 files"
+      echo "Check what you are doing carefully"
+      echo ""
+      exit 1
+   fi
+else
+   if [ ! -d "${dstdir}" ]; then
+      echo "${dstdir}: Directory does not exist"
+      exit 1
+   fi
+
+   mp4=`/bin/ls ${dstdir}/${dvd_folder}/*.mp4 2>/dev/null`
+   if [ ! -z "${mp4}" ]; then
+      echo ""
+      echo "${dstdir}/${dvd_folder}: Contains mp4 files"
+      echo "Check what you are doing carefully"
+      echo ""
+      exit 1
+   fi
 fi
 
 echo ""

@@ -15,7 +15,7 @@ else
 fi
 
 case "${hostname}" in
-thorin)
+thorin|thrain)
   BASE=/home/private
   HANDBRAKE=/usr/bin/HandBrakeCLI
 #  RUN_QUEUE=/home/smp/home/script-backup/HandBrake/bin-scripts/queue-run.sh
